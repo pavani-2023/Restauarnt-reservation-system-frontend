@@ -37,3 +37,35 @@ button.danger {
   border-radius: 6px;
   cursor: pointer;
 }
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.edit-btn:hover {
+  background: #4338ca;
+}
+
+.danger-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.danger-btn:hover {
+  background: #b91c1c;
+}
