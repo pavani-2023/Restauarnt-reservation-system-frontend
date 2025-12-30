@@ -5,8 +5,11 @@ export function generateHours() {
 }
 
 export function generateMinutes() {
-  return ["00", "30"];
+  return Array.from({ length: 60 }, (_, i) =>
+    String(i).padStart(2, "0")
+  );
 }
+
 
 export function calculateTimeSlot(hour, minute, durationHours) {
   const h = Number(hour);

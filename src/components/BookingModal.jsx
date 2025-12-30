@@ -6,8 +6,6 @@ import SuccessModal from "./SuccessModal";
 import {generateHours,generateMinutes,calculateTimeSlot} from "../utils/booking"
 
 
-
-
 const BookingModal = ({ isOpen, onClose, formData, setFormData }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -23,20 +21,21 @@ const BookingModal = ({ isOpen, onClose, formData, setFormData }) => {
   if (!isOpen) return null;
 const isToday = formData.date === new Date().toISOString().split("T")[0];
 
-function isPastMinute(hourStr, minuteStr) {
-  if (!isToday || !hourStr) return false;
+function isPastTime(hourStr, minuteStr) {
+ if (!isToday || !hourStr || minuteStr === undefined) return false;
 
   const now = new Date();
+
   let [hour, period] = hourStr.split(" ");
   hour = parseInt(hour, 10);
 
   if (period === "PM" && hour !== 12) hour += 12;
   if (period === "AM" && hour === 12) hour = 0;
 
-  const selected = new Date();
-  selected.setHours(hour, parseInt(minuteStr), 0);
+  const selectedTime = new Date();
+  selectedTime.setHours(hour, parseInt(minuteStr), 0, 0);
 
-  return selected <= now;
+  return selectedTime <= now;
 }
 
 
@@ -181,46 +180,49 @@ setTimeout(() => {
 
           <div className="time-picker">
             <select
-              value={formData.hour}
-              onChange={(e) =>
-                setFormData({ ...formData, hour: e.target.value })
-              }
-              size={5}
-              required
-            >
-              {generateHours().map((h) => (
-              <option
-            key={h}
-            value={h}
-            disabled={isPastMinute(h, formData.minute)}
-          >
-            {h}
-          </option>
+                value={formData.hour}
+                onChange={(e) =>
+                  setFormData({ ...formData, hour: e.target.value })
+                }
+                size={5}
+                required
+              >
+                {generateHours().map((h) => (
+                  <option
+                    key={h}
+                    value={h}
+                    disabled={
+                      isToday &&
+                      isPastTime(h, "59") // entire hour is past
+                    }
+                  >
+                    {h}
+                  </option>
+                ))}
+              </select>
 
-              ))}
-            </select>
 
             <span className="colon">:</span>
 
             <select
-              value={formData.minute}
-              onChange={(e) =>
-                setFormData({ ...formData, minute: e.target.value })
-              }
-              size={2}
-              required
-            >
-              {generateMinutes().map((m) => (
-                <option
-                  key={m}
-                  value={m}
-                  disabled={isPastMinute(formData.hour, m)}
-                >
-                  {m}
-                </option>
+  value={formData.minute}
+  onChange={(e) =>
+    setFormData({ ...formData, minute: e.target.value })
+  }
+  size={4}
+  required
+>
+  {generateMinutes().map((m) => (
+    <option
+      key={m}
+      value={m}
+      disabled={isPastTime(formData.hour, m)}
+    >
+      {m}
+    </option>
+  ))}
+</select>
 
-              ))}
-            </select>
           </div>
 
           <label>Number of Guests</label>
