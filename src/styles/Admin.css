@@ -69,3 +69,14 @@ button.danger {
 .danger-btn:hover {
   background: #b91c1c;
 }
+.error {
+  color: #dc2626;
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

@@ -16,15 +16,16 @@ const AdminDashboard = () => {
       ? `http://localhost:5000/admin/reservations?date=${date}`
       : `http://localhost:5000/admin/reservations`;
 
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const data = await res.json();
-    setReservations(data);
-    setLoading(false);
+      const data = await res.json();
+      setReservations(data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const AdminDashboard = () => {
       ) : (
         <AdminReservationTable
           reservations={reservations}
-          onUpdate={fetchReservations}
+          refresh={fetchReservations}
         />
       )}
     </div>
