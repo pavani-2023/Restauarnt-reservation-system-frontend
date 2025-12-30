@@ -18,7 +18,7 @@ const AdminDashboard = () => {
   const fetchReservations = async () => {
     setLoading(true);
 
-    const url = `http://localhost:5000/admin/reservations?date=${date}`;
+    const url = `${process.env.REACT_APP_API_URL}/admin/reservations?date=${date}`;
 
     try {
       const res = await fetch(url, {

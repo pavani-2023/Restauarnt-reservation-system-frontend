@@ -6,7 +6,7 @@ const AddTableModal = ({ onClose, onSuccess }) => {
   const token = localStorage.getItem("token");
 
   const submit = async () => {
-    await fetch("http://localhost:5000/admin/tables", {
+    await fetch(`${process.env.REACT_APP_API_URL}/admin/tables`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

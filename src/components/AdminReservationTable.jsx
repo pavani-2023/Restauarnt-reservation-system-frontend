@@ -11,7 +11,7 @@ const AdminReservationTable = ({ reservations, refresh }) => {
     if (!ok) return;
 
     const res = await fetch(
-      `http://localhost:5000/admin/reservations/${id}`,
+      `${process.env.REACT_APP_API_URL}/admin/reservations/${id}`,
       {
         method: "PATCH",
         headers: {

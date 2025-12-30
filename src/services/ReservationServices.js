@@ -19,7 +19,7 @@ export async function fetchMyReservations(token) {
 
 export const cancelReservation = async (id, token) => {
   const res = await fetch(
-    `http://localhost:5000/reservations/${id}/cancel`,
+    `${process.env.REACT_APP_API_URL}/reservations/${id}/cancel`,
     {
       method: "PATCH",
       headers: {
