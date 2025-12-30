@@ -17,7 +17,6 @@ const BookingModal = ({ isOpen, onClose, formData, setFormData }) => {
 
 
 
-
   if (!isOpen) return null;
 const isToday = formData.date === new Date().toISOString().split("T")[0];
 
