@@ -6,7 +6,10 @@ import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminTables from './pages/AdminTables';
-import Navbar from './components/Navbar';
+
+import Register from './pages/Register';
+import CreateAdmin from "./pages/CreateAdmin";
+
 function App() {
   return (
     <div className="App">
@@ -15,11 +18,13 @@ function App() {
         <Route path="/" element={<Home />} />
       
         <Route path='/login' element={<Login/>}/>
+        <Route path="/register" element={<Register />} />
+
         <Route path="/dashboard" element={<UserDashboard/>} />
-         <Route path="/admin" element={<AdminHomePage />} />
+         {/* <Route path="/admin" element={<AdminHomePage />} /> */}
          <Route path="/admin/tables" element={<AdminTables />} />
          <Route path="/admin/reservation-list" element={<AdminDashboard />} />
-
+        <Route path="/add-admin" element={<CreateAdmin />} />
 
       </Routes>
       </BrowserRouter>

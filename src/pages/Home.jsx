@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import BookingModal from "../components/BookingModal";
 import "../App.css";
-import { Link } from "react-router-dom";
+
 import Navbar from "../components/Navbar";
 
 const Home = () => {
@@ -35,13 +35,8 @@ const Home = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    window.location.reload();
-  };
-
-  const isLoggedIn = !!localStorage.getItem("token");
+  
+  
   const role = localStorage.getItem("role"); // "user" | "admin"
 
 
@@ -103,6 +98,9 @@ const Home = () => {
                 onClick={() => navigate("/admin/reservation-list")}
               >
                 Manage Reservations
+              </button>
+              <button className="primary-btn" onClick={()=>navigate("/add-admin")}>
+                Add users
               </button>
             </>
           )}

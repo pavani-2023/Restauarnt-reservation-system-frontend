@@ -72,3 +72,23 @@
   color: #c0392b;
   font-size: 0.9rem;
 }
+
+.auth-switch {
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.auth-switch span {
+  color: #c25b3a;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.auth-switch span:hover {
+  text-decoration: underline;
+}
+.success-text {
+  color: green;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}

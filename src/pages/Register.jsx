@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import "../styles/Login.css";
-import { Link } from "react-router-dom";
-const Login = () => {
-  console.log("API URL:", process.env.REACT_APP_API_URL);
+import { useNavigate } from "react-router-dom";
+import "../styles/Login.css"; // reuse same styles
 
+const Register = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const [name, setName] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,16 +18,16 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/login`,
+        `${process.env.REACT_APP_API_URL}/auth/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ name, email, password })
         }
       );
 
       if (!response.ok) {
-        throw new Error("INVALID_CREDENTIALS");
+        throw new Error("REGISTER_FAILED");
       }
 
       const data = await response.json();
@@ -38,15 +36,13 @@ const Login = () => {
       localStorage.setItem("role", data.role);
 
       // 🔁 redirect logic
-      if (location.state?.openBooking) {
-        navigate("/", { state: { openBooking: true } });
-      } else if (data.role === "ADMIN") {
-        navigate("/admin");
+      if (data.role === "ADMIN") {
+        navigate("/admin", { replace: true });
       } else {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     } catch (err) {
-      setError("Invalid email or password");
+      setError("Registration failed. Try another email.");
     } finally {
       setLoading(false);
     }
@@ -55,10 +51,20 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>Welcome Back</h2>
-        <p>Please login to continue</p>
+        <h2>Create Account</h2>
+        <p>Register to start reserving tables</p>
 
         <form onSubmit={handleSubmit}>
+          <label>
+  Name
+  <input
+    type="text"
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+    required
+  />
+</label>
+
           <label>
             Email
             <input
@@ -82,18 +88,17 @@ const Login = () => {
           {error && <p className="error-text">{error}</p>}
 
           <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Creating account..." : "Register"}
           </button>
-          <h2>Register Here</h2>
-          <Link to ="/register">
-          <button>
-            Register
-          </button>
-          </Link>
         </form>
+
+        <p className="auth-switch">
+          Already have an account?{" "}
+          <span onClick={() => navigate("/login")}>Login</span>
+        </p>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Register;
