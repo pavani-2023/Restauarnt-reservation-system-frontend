@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import BookingModal from "../components/BookingModal";
 import "../App.css";
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -41,32 +42,13 @@ const Home = () => {
   };
 
   const isLoggedIn = !!localStorage.getItem("token");
+  const role = localStorage.getItem("role"); // "user" | "admin"
+
 
   return (
     <div className="home-container">
       {/* Navbar */}
-      <nav className="navbar">
-        <div className="logo">🍽️ ReserveEase</div>
-        
-        <div className="nav-actions">
-          {isLoggedIn ? (
-            <button className="login-btn" onClick={handleLogout}>
-              Logout
-            </button>
-          ) : (
-            <button
-              className="login-btn"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </button>
-          )}
-          <Link to="/dashboard">
-          <h2>Reservations</h2>
-          </Link>
-          
-        </div>
-      </nav>
+    <Navbar/>
 
       {/* Hero Section */}
       <section className="hero">
@@ -80,7 +62,7 @@ const Home = () => {
           Choose your time, we’ll handle the rest.
         </p>
 
-        <div className="hero-actions">
+        {/* <div className="hero-actions">
           <button className="primary-btn" onClick={handleBookClick}>
             Book a Table
           </button>
@@ -93,7 +75,40 @@ const Home = () => {
               Login
             </button>
           )}
+        </div> */}
+          <div className="hero-actions">
+          {/* USER CTA */}
+          {role !== "ADMIN" && (
+            <>
+              <button className="primary-btn" onClick={handleBookClick}>
+                Book a Table
+              </button>
+
+
+            </>
+          )}
+
+          {/* ADMIN CTA */}
+          {role === "ADMIN" && (
+            <>
+              <button
+                className="primary-btn"
+                onClick={() => navigate("/admin/tables")}
+              >
+                Manage Tables
+              </button>
+
+              <button
+                className="secondary-btn"
+                onClick={() => navigate("/admin/reservation-list")}
+              >
+                Manage Reservations
+              </button>
+            </>
+          )}
         </div>
+
+
       </section>
 
       {/* Booking Modal */}

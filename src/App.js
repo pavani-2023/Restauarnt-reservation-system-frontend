@@ -6,12 +6,14 @@ import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminTables from './pages/AdminTables';
+import Navbar from './components/Navbar';
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+      
         <Route path='/login' element={<Login/>}/>
         <Route path="/dashboard" element={<UserDashboard/>} />
          <Route path="/admin" element={<AdminHomePage />} />
