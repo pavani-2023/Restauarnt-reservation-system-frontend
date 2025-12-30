@@ -41,7 +41,7 @@ const Login = () => {
       if (location.state?.openBooking) {
         navigate("/", { state: { openBooking: true } });
       } else if (data.role === "ADMIN") {
-        navigate("/admin");
+        navigate("/");
       } else {
         navigate("/");
       }
