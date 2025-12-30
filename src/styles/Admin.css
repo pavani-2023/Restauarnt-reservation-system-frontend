@@ -1,0 +1,39 @@
+.admin-container {
+  padding: 40px;
+}
+
+.admin-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.status.active {
+  color: green;
+  font-weight: 600;
+}
+
+.status.cancelled {
+  color: red;
+}
+
+button.danger {
+  background: #c75c3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}

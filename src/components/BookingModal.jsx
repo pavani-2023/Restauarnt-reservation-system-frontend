@@ -3,7 +3,7 @@ import "../styles/BookingModal.css";
 // import api from "../api/api";
 import { useNavigate } from "react-router-dom";
 import SuccessModal from "./SuccessModal";
-import {generateStartTimes,calculateTimeSlot} from "../utils/booking"
+import {generateHours,generateMinutes,calculateTimeSlot} from "../utils/booking"
 
 
 
@@ -15,11 +15,30 @@ const BookingModal = ({ isOpen, onClose, formData, setFormData }) => {
   const navigate = useNavigate();
  const [showSuccess, setShowSuccess] = useState(false);
  const today = new Date().toISOString().split("T")[0];
-console.log(generateStartTimes());
 
- 
+
+
+
 
   if (!isOpen) return null;
+const isToday = formData.date === new Date().toISOString().split("T")[0];
+
+function isPastMinute(hourStr, minuteStr) {
+  if (!isToday || !hourStr) return false;
+
+  const now = new Date();
+  let [hour, period] = hourStr.split(" ");
+  hour = parseInt(hour, 10);
+
+  if (period === "PM" && hour !== 12) hour += 12;
+  if (period === "AM" && hour === 12) hour = 0;
+
+  const selected = new Date();
+  selected.setHours(hour, parseInt(minuteStr), 0);
+
+  return selected <= now;
+}
+
 
 
 
@@ -52,24 +71,33 @@ console.log(generateStartTimes());
   //   }
   // };
  const handleSubmit = async (e) => {
-      e.preventDefault();
-      setError("");
-      setLoading(true);
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-      try {
-        const token = localStorage.getItem("token");
+    try {
+        if (!formData.guests || Number(formData.guests) < 1) {
+          setError("Please enter number of guests.");
+          return;
+        }
+      const token = localStorage.getItem("token");
         if (Number(formData.guests) > MAX_TABLE_CAPACITY) {
-      setError(
-        "We can accommodate up to 6 guests per table. For larger parties, please contact the restaurant."
-      );
-      return;
-    }
-     if (!formData.startTime) {
-        setError("Please select a start time.");
-        return;
-      }
+          setError(
+            "We can accommodate up to 6 guests per table. For larger parties, please contact the restaurant."
+          );
+          return;
+        }
+        if (!formData.hour || !formData.minute) {
+          setError("Please select a valid time.");
+          return;
+        }
 
-      const { start, end } = calculateTimeSlot(formData.startTime, 3);
+      const { start, end } = calculateTimeSlot(
+        formData.hour,
+        formData.minute,
+        3
+      );
+
       const timeSlot = `${start} - ${end}`;
 
 
@@ -96,6 +124,8 @@ console.log(generateStartTimes());
     if (!response.ok) {
       throw new Error("GENERIC_ERROR");
     }
+  
+
 
 // ✅ SUCCESS FLOW
 setShowSuccess(true);
@@ -121,9 +151,7 @@ setTimeout(() => {
     setLoading(false);
   }
 };
-const handleChange=(e)=>{
 
-}
 
   return (
     <div className="modal-overlay">
@@ -149,27 +177,67 @@ const handleChange=(e)=>{
             />
           </label>
 
-          <label>
-            Select Start Time
-            <div className="time-wheel">
-              <select
-                name="startTime"
-                value={formData.startTime}
-                onChange={(e) =>
-                  setFormData({ ...formData, startTime: e.target.value })
-                }
-                size={5}
-                required
-              >
-                <option value="">Select time</option>
-                {generateStartTimes().map((time) => (
-                  <option key={time} value={time}>
-                    {time}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </label>
+         <label>Select Start Time</label>
+
+          <div className="time-picker">
+            <select
+              value={formData.hour}
+              onChange={(e) =>
+                setFormData({ ...formData, hour: e.target.value })
+              }
+              size={5}
+              required
+            >
+              {generateHours().map((h) => (
+              <option
+            key={h}
+            value={h}
+            disabled={isPastMinute(h, formData.minute)}
+          >
+            {h}
+          </option>
+
+              ))}
+            </select>
+
+            <span className="colon">:</span>
+
+            <select
+              value={formData.minute}
+              onChange={(e) =>
+                setFormData({ ...formData, minute: e.target.value })
+              }
+              size={2}
+              required
+            >
+              {generateMinutes().map((m) => (
+                <option
+                  key={m}
+                  value={m}
+                  disabled={isPastMinute(formData.hour, m)}
+                >
+                  {m}
+                </option>
+
+              ))}
+            </select>
+          </div>
+
+          <label>Number of Guests</label>
+  <input
+    type="number"
+    min="1"
+    max="12"
+    placeholder="Enter number of guests"
+    value={formData.guests || ""}
+    onChange={(e) =>
+      setFormData({ ...formData, guests: e.target.value })
+    }
+    required
+  />
+
+          <p className="hint">⏱ 3-hour dining window</p>
+
 
 
           {error && <p className="error-text">{error}</p>}
@@ -191,6 +259,15 @@ const handleChange=(e)=>{
   />
 )}
 
+{formData.hour && formData.minute && (
+  <p className="preview">
+    🕒 Reservation from{" "}
+    <strong>
+      {calculateTimeSlot(formData.hour, formData.minute, 3)?.start} –{" "}
+      {calculateTimeSlot(formData.hour, formData.minute, 3)?.end}
+    </strong>
+  </p>
+)}
 
     </div>
   );

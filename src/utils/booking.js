@@ -1,32 +1,41 @@
-export function generateStartTimes() {
-  const times = [];
-  let hour = 10; // 10 AM
-  const endHour = 20; // Last start = 8 PM
-
-  while (hour <= endHour) {
-    times.push(formatTime(hour));
-    hour++;
+export function generateHours() {
+  const hours = [];
+  for (let h = 10; h <= 21; h++) {
+    hours.push(formatTime(h));
   }
+  return hours;
+}
 
-  return times;
+export function generateMinutes() {
+  
+  return ["00", "30"];
 }
 
 function formatTime(hour24) {
   const period = hour24 >= 12 ? "PM" : "AM";
   const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
-  return `${hour12}:00 ${period}`;
+  return `${hour12} ${period}`;
 }
-export function calculateTimeSlot(startTime, duration = 3) {
-  const [time, period] = startTime.split(" ");
-  let hour = parseInt(time.split(":")[0], 10);
+
+export function calculateTimeSlot(hourStr, minuteStr, duration = 3) {
+    if (!hourStr || !minuteStr) return null;
+  let [hour, period] = hourStr.split(" ");
+  hour = parseInt(hour, 10);
 
   if (period === "PM" && hour !== 12) hour += 12;
   if (period === "AM" && hour === 12) hour = 0;
 
+  const startHour = hour;
   const endHour = hour + duration;
 
   return {
-    start: formatTime(hour),
-    end: formatTime(endHour),
+    start: formatDisplay(startHour, minuteStr),
+    end: formatDisplay(endHour, minuteStr),
   };
+}
+
+function formatDisplay(hour24, minute) {
+  const period = hour24 >= 12 ? "PM" : "AM";
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  return `${hour12}:${minute} ${period}`;
 }

@@ -1,9 +1,59 @@
-import React from 'react'
+import { useEffect, useState } from "react";
+import AdminReservationTable from "../components/AdminReservationTable";
+import "../styles/Admin.css";
 
-export default function AdminDashboard() {
+const AdminDashboard = () => {
+  const [reservations, setReservations] = useState([]);
+  const [date, setDate] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const token = localStorage.getItem("token");
+
+  const fetchReservations = async () => {
+    setLoading(true);
+
+    const url = date
+      ? `http://localhost:5000/admin/reservations?date=${date}`
+      : `http://localhost:5000/admin/reservations`;
+
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    setReservations(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchReservations();
+  }, []);
+
   return (
-    <div>
-      
+    <div className="admin-container">
+      <h1>Admin Dashboard</h1>
+
+      <div className="admin-filters">
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+        <button onClick={fetchReservations}>Filter</button>
+      </div>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <AdminReservationTable
+          reservations={reservations}
+          onUpdate={fetchReservations}
+        />
+      )}
     </div>
-  )
-}
+  );
+};
+
+export default AdminDashboard;
