@@ -4,7 +4,8 @@ import { BrowserRouter,Route,Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
-
+import AdminHomePage from './pages/AdminHomePage';
+import AdminTables from './pages/AdminTables';
 function App() {
   return (
     <div className="App">
@@ -13,7 +14,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path='/login' element={<Login/>}/>
         <Route path="/dashboard" element={<UserDashboard/>} />
-         <Route path="/admin" element={<AdminDashboard />} />
+         <Route path="/admin" element={<AdminHomePage />} />
+         <Route path="/admin/tables" element={<AdminTables />} />
+         <Route path="/admin/reservation-list" element={<AdminDashboard />} />
+
 
       </Routes>
       </BrowserRouter>

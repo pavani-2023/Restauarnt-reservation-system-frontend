@@ -1,84 +1,40 @@
-// src/components/ReservationCard.jsx
+const isPastReservation = (reservation) => {
+  const startTime = reservation.timeSlot.split(" - ")[0];
+  const reservationDateTime = new Date(
+    `${reservation.date} ${startTime}`
+  );
 
-// export default function ReservationCard({ reservation, onCancel }) {
-//   return (
-//     <div className="reservation-card">
-//       <div>
-//         <strong>Date:</strong> {reservation.date}
-//       </div>
-//       <div>
-//         <strong>Time:</strong> {reservation.timeSlot}
-//       </div>
-//       <div>
-//         <strong>Guests:</strong> {reservation.guests}
-//       </div>
-//       <div>
-//         <strong>Table:</strong> {reservation.tableId?.tableNumber}
-//       </div>
-//       <div>
-//         <strong>Status:</strong> {reservation.status}
-//       </div>
+  return reservationDateTime < new Date();
+};
 
-//       {reservation.status === "ACTIVE" && (
-//         <button onClick={() => onCancel(reservation._id)}>
-//           Cancel
-//         </button>
-//       )}
-//     </div>
-//   );
-// }
-// export default function ReservationCard({ reservation, onCancel }) {
-//   return (
-//     <div className="reservation-card">
-//       <div className="reservation-info">
-//         <div>
-//           <span>Date</span>
-//           <strong>{reservation.date}</strong>
-//         </div>
-
-//         <div>
-//           <span>Time</span>
-//           <strong>{reservation.timeSlot}</strong>
-//         </div>
-
-//         <div>
-//           <span>Guests</span>
-//           <strong>{reservation.guests}</strong>
-//         </div>
-
-//         <div>
-//           <span>Table</span>
-//           <strong>{reservation.tableId?.tableNumber}</strong>
-//         </div>
-
-//         <div>
-//           <span>Status</span>
-//           <div
-//             className={`reservation-status ${
-//               reservation.status === "ACTIVE"
-//                 ? "status-active"
-//                 : "status-cancelled"
-//             }`}
-//           >
-//             {reservation.status}
-//           </div>
-//         </div>
-//       </div>
-
-//       <div className="reservation-actions">
-//         {reservation.status === "ACTIVE" && (
-//           <button
-//             className="cancel-btn"
-//             onClick={() => onCancel(reservation._id)}
-//           >
-//             Cancel
-//           </button>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
 export default function ReservationCard({ reservation, onCancel }) {
+  const isPast = isPastReservation(reservation);
+
+const displayStatus =
+  reservation.status === "CANCELLED"
+    ? "CANCELLED"
+    : isPast
+    ? "COMPLETED"
+    : "ACTIVE";
+
+  
+  const canCancel = () => {
+  if (reservation.status !== "ACTIVE") return false;
+
+  const now = new Date();
+  const startTime = reservation.timeSlot.split(" - ")[0];
+  const reservationDateTime = new Date(
+    `${reservation.date} ${startTime}`
+  );
+
+  const diffHours =
+    (reservationDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+  return diffHours >= 3;
+};
+
+  
+
   return (
     <div className="reservation-card">
       <div className="reservation-left">
@@ -94,14 +50,17 @@ export default function ReservationCard({ reservation, onCancel }) {
           <span>Status:</span>
           <div
             className={`status-pill ${
-              reservation.status === "ACTIVE"
+              displayStatus === "ACTIVE"
                 ? "status-active"
-                : "status-cancelled"
+                : displayStatus === "CANCELLED"
+                ? "status-cancelled"
+                : "status-completed"
             }`}
           >
-            {reservation.status}
+            {displayStatus}
           </div>
         </div>
+
       </div>
 
       <div className="reservation-right">
@@ -113,14 +72,25 @@ export default function ReservationCard({ reservation, onCancel }) {
           <span>Table:</span> {reservation.tableId?.tableNumber}
         </div>
 
-        {reservation.status === "ACTIVE" && (
-          <button
-            className="cancel-btn"
-            onClick={() => onCancel(reservation._id)}
-          >
-            Cancel
-          </button>
+       {displayStatus === "ACTIVE" && (
+          <>
+            <button
+              className="cancel-btn"
+              disabled={!canCancel()}
+              onClick={() => onCancel(reservation._id)}
+            >
+              Cancel
+            </button>
+
+            {!canCancel() && (
+              <div className="cancel-hint">
+                Cancellation allowed only up to 3 hours before start time
+              </div>
+            )}
+          </>
         )}
+
+
       </div>
     </div>
   );

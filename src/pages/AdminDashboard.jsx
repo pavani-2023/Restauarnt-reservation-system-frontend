@@ -2,9 +2,15 @@ import { useEffect, useState } from "react";
 import AdminReservationTable from "../components/AdminReservationTable";
 import "../styles/Admin.css";
 
+const getToday = () => {
+  const today = new Date();
+  return today.toISOString().split("T")[0];
+};
+
 const AdminDashboard = () => {
   const [reservations, setReservations] = useState([]);
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(getToday());
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem("token");
@@ -12,9 +18,7 @@ const AdminDashboard = () => {
   const fetchReservations = async () => {
     setLoading(true);
 
-    const url = date
-      ? `http://localhost:5000/admin/reservations?date=${date}`
-      : `http://localhost:5000/admin/reservations`;
+    const url = `http://localhost:5000/admin/reservations?date=${date}`;
 
     try {
       const res = await fetch(url, {
@@ -30,7 +34,14 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchReservations();
-  }, []);
+  }, [date]);
+
+  const filteredReservations = reservations.filter((r) => {
+    if (statusFilter === "ALL") return true;
+    if (statusFilter === "CANCELLED") return r.status === "CANCELLED";
+    if (statusFilter === "MODIFIED") return Boolean(r.editedAt);
+    return true;
+  });
 
   return (
     <div className="admin-container">
@@ -42,14 +53,24 @@ const AdminDashboard = () => {
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
-        <button onClick={fetchReservations}>Filter</button>
+
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="ALL">All</option>
+          <option value="MODIFIED">Modified</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+
+        <button onClick={fetchReservations}>Refresh</button>
       </div>
 
       {loading ? (
         <p>Loading...</p>
       ) : (
         <AdminReservationTable
-          reservations={reservations}
+          reservations={filteredReservations}
           refresh={fetchReservations}
         />
       )}

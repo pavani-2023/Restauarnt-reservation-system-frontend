@@ -108,3 +108,10 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+.status-completed {
+  background: #e5e7eb;
+  color: #374151;
+}
+.reservation-card.completed {
+  opacity: 0.85;
+}

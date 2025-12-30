@@ -6,17 +6,22 @@ import {
   fetchMyReservations,
   cancelReservation,
 } from "../services/ReservationServices";
+
+import ConfirmModal from "../components/ConfirmModal";
 import "../styles/UserDashboard.css";
 
 
 export default function UserDashboard() {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+const [selectedId, setSelectedId] = useState(null);
+
   const [reservations, setReservations] = useState([]);
   const [error, setError] = useState("");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     loadReservations();
-  }, [reservations]);
+  }, []);
 
   async function loadReservations() {
     try {
@@ -27,16 +32,32 @@ export default function UserDashboard() {
     }
   }
 
-  async function handleCancel(id) {
-    if (!window.confirm("Cancel this reservation?")) return;
+  // async function handleCancel(id) {
+  //   if (!window.confirm("Cancel this reservation?")) return;
 
-    try {
-      await cancelReservation(id, token);
-      loadReservations(); // refresh list
-    } catch {
-      alert("Failed to cancel reservation");
-    }
+  //   try {
+  //     await cancelReservation(id, token);
+  //     loadReservations(); // refresh list
+  //   } catch {
+  //     alert("Failed to cancel reservation");
+  //   }
+  // }
+  function handleCancelClick(id) {
+  setSelectedId(id);
+  setConfirmOpen(true);
+}
+
+async function confirmCancel() {
+  try {
+    await cancelReservation(selectedId, token);
+    setConfirmOpen(false);
+    setSelectedId(null);
+    loadReservations();
+  } catch (err) {
+    alert(err.message); // optional toast later
   }
+}
+
 
   return (
     <div className="user-dashboard">
@@ -53,12 +74,23 @@ export default function UserDashboard() {
             <ReservationCard
               key={r._id}
               reservation={r}
-              onCancel={handleCancel}
+              onCancel={handleCancelClick}
             />
           ))}
         </div>
       )}
     </div>
+
+        <ConfirmModal
+      open={confirmOpen}
+      title="Cancel Reservation"
+      message="Are you sure you want to cancel this reservation?"
+      confirmText="Yes, Cancel"
+      cancelText="No"
+      onClose={() => setConfirmOpen(false)}
+      onConfirm={confirmCancel}
+    />
+
 
     </div>
     

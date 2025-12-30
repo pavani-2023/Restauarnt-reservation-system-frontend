@@ -17,11 +17,11 @@ export async function fetchMyReservations(token) {
   return res.json();
 }
 
-export async function cancelReservation(id, token) {
+export const cancelReservation = async (id, token) => {
   const res = await fetch(
-    `${process.env.REACT_APP_API_URL}/reservations/${id}`,
+    `http://localhost:5000/reservations/${id}/cancel`,
     {
-      method: "DELETE",
+      method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -29,6 +29,10 @@ export async function cancelReservation(id, token) {
   );
 
   if (!res.ok) {
-    throw new Error("Failed to cancel reservation");
+    const err = await res.json();
+    throw new Error(err.message);
   }
-}
+
+  return res.json();
+};
+
