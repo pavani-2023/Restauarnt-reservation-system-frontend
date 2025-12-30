@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import BookingModal from "../components/BookingModal";
 import "../App.css";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const Home = () => {
       {/* Navbar */}
       <nav className="navbar">
         <div className="logo">🍽️ ReserveEase</div>
-
+        
         <div className="nav-actions">
           {isLoggedIn ? (
             <button className="login-btn" onClick={handleLogout}>
@@ -60,6 +61,10 @@ const Home = () => {
               Login
             </button>
           )}
+          <Link to="/dashboard">
+          <h2>Reservations</h2>
+          </Link>
+          
         </div>
       </nav>
 

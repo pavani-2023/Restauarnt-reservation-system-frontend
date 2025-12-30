@@ -1,13 +1,27 @@
 import { useState } from "react";
 import "../styles/BookingModal.css";
 // import api from "../api/api";
+import { useNavigate } from "react-router-dom";
+import SuccessModal from "./SuccessModal";
+import {generateStartTimes,calculateTimeSlot} from "../utils/booking"
+
+
 
 
 const BookingModal = ({ isOpen, onClose, formData, setFormData }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const MAX_TABLE_CAPACITY = 6;
+  const navigate = useNavigate();
+ const [showSuccess, setShowSuccess] = useState(false);
+ const today = new Date().toISOString().split("T")[0];
+console.log(generateStartTimes());
+
+ 
 
   if (!isOpen) return null;
+
+
 
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
@@ -37,13 +51,27 @@ const BookingModal = ({ isOpen, onClose, formData, setFormData }) => {
   //     setLoading(false);
   //   }
   // };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
+ const handleSubmit = async (e) => {
+      e.preventDefault();
+      setError("");
+      setLoading(true);
 
-  try {
-    const token = localStorage.getItem("token");
+      try {
+        const token = localStorage.getItem("token");
+        if (Number(formData.guests) > MAX_TABLE_CAPACITY) {
+      setError(
+        "We can accommodate up to 6 guests per table. For larger parties, please contact the restaurant."
+      );
+      return;
+    }
+     if (!formData.startTime) {
+        setError("Please select a start time.");
+        return;
+      }
+
+      const { start, end } = calculateTimeSlot(formData.startTime, 3);
+      const timeSlot = `${start} - ${end}`;
+
 
     const response = await fetch(
      `${process.env.REACT_APP_API_URL}/reservations`,
@@ -55,7 +83,7 @@ const handleSubmit = async (e) => {
         },
         body: JSON.stringify({
           date: formData.date,
-          timeSlot: formData.timeSlot,
+          timeSlot,
           guests: Number(formData.guests)
         })
       }
@@ -69,8 +97,18 @@ const handleSubmit = async (e) => {
       throw new Error("GENERIC_ERROR");
     }
 
-    alert("✅ Reservation confirmed");
-    onClose();
+// ✅ SUCCESS FLOW
+setShowSuccess(true);
+
+setTimeout(() => {
+   navigate("/dashboard");
+  setShowSuccess(false);
+  onClose();
+ 
+}, 500);
+
+
+
   } catch (err) {
     if (err.message === "FULLY_BOOKED") {
       setError(
@@ -83,6 +121,9 @@ const handleSubmit = async (e) => {
     setLoading(false);
   }
 };
+const handleChange=(e)=>{
+
+}
 
   return (
     <div className="modal-overlay">
@@ -100,6 +141,7 @@ const handleSubmit = async (e) => {
             <input
               type="date"
               value={formData.date}
+              min={today}
               onChange={(e) =>
                 setFormData({ ...formData, date: e.target.value })
               }
@@ -108,34 +150,27 @@ const handleSubmit = async (e) => {
           </label>
 
           <label>
-            Time Slot
-            <select
-              value={formData.timeSlot}
-              onChange={(e) =>
-                setFormData({ ...formData, timeSlot: e.target.value })
-              }
-              required
-            >
-              <option value="">Select time</option>
-              <option value="18:00-20:00">18:00 – 20:00</option>
-              <option value="20:00-22:00">20:00 – 22:00</option>
-               <option value="10:00-12:00">10:00 – 12:00</option>
-            </select>
+            Select Start Time
+            <div className="time-wheel">
+              <select
+                name="startTime"
+                value={formData.startTime}
+                onChange={(e) =>
+                  setFormData({ ...formData, startTime: e.target.value })
+                }
+                size={5}
+                required
+              >
+                <option value="">Select time</option>
+                {generateStartTimes().map((time) => (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
+            </div>
           </label>
 
-          <label>
-            Guests
-            <input
-              type="number"
-              min="1"
-              max="10"
-              value={formData.guests}
-              onChange={(e) =>
-                setFormData({ ...formData, guests: e.target.value })
-              }
-              required
-            />
-          </label>
 
           {error && <p className="error-text">{error}</p>}
 
@@ -144,6 +179,19 @@ const handleSubmit = async (e) => {
           </button>
         </form>
       </div>
+      
+      {showSuccess && (
+  <SuccessModal
+    isOpen={showSuccess}
+    onConfirm={() => {
+      setShowSuccess(false);
+      onClose();
+      navigate("/dashboard");
+    }}
+  />
+)}
+
+
     </div>
   );
 };
