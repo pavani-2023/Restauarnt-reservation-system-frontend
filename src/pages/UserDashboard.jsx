@@ -23,6 +23,13 @@ const [selectedId, setSelectedId] = useState(null);
     loadReservations();
   }, []);
 
+  useEffect(() => {
+  const role = localStorage.getItem("role");
+  if (role !== "USER") {
+    navigate("/");
+  }
+}, []);
+
   async function loadReservations() {
     try {
       const data = await fetchMyReservations(token);

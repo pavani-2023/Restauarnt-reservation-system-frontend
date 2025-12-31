@@ -37,7 +37,7 @@ const Register = () => {
 
       // 🔁 redirect logic
       if (data.role === "ADMIN") {
-        navigate("/admin", { replace: true });
+        navigate("/", { replace: true });
       } else {
         navigate("/", { replace: true });
       }
