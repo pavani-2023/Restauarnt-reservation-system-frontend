@@ -9,9 +9,10 @@ import {
 
 import ConfirmModal from "../components/ConfirmModal";
 import "../styles/UserDashboard.css";
-
+import { useNavigate } from "react-router-dom";
 
 export default function UserDashboard() {
+  const navigate = useNavigate()
   const [confirmOpen, setConfirmOpen] = useState(false);
 const [selectedId, setSelectedId] = useState(null);
 
